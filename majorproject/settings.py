@@ -93,8 +93,16 @@ WSGI_APPLICATION = 'majorproject.wsgi.application'
 # }
 
 # postgresql://majorproject_user:CZTMTRNb24jUGjIc5CTisAV6tAzfjqFf@dpg-cu7156dumphs73d1ip6g-a.oregon-postgres.render.com/majorproject
+import dj_database_url
+import os
 
-DATABASES = {
+if os.getenv("RENDER"):
+    # Use PostgreSQL on Render
+    DATABASES = {
+        'default': dj_database_url.config(default=os.getenv("postgresql://user:8CCCC5HaHoBCnmykpuzlOHbJDIUUZ9DX@dpg-cv41nvdds78s73e2kmjg-a.oregon-postgres.render.com/majorproject_fqnz"))
+    }
+else:
+    DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',  # Replace with your database backend
         'NAME': 'master',
