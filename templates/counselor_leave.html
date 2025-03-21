@@ -1,0 +1,396 @@
+<!--templates/leave/counselor_leave.html-->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    {% load static %}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Leave Applications</title>
+    <link rel="icon" type="image/x-icon" href="{% static 'images/Logo.svg' %}">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@100..900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <link rel="stylesheet" href="{% static 'css/header.css' %}">
+    <link rel="stylesheet" href="{% static 'css/counselor_leave.css' %}">
+    <script src="{% static 'js/header.js' %}"></script>
+<!--    <script src="{% static 'js/counselor_leave.js' %}"></script>-->
+    <style>
+        .action-link {
+            display: inline-block;
+            margin: 2px 5px;
+        }
+        .messages {
+            margin: 10px 20px;
+        }
+        .message {
+            padding: 10px;
+            margin-bottom: 10px;
+            border-radius: 4px;
+        }
+        .success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+    </style>
+</head>
+<body style="background-image: url({% static 'images/Background2.svg' %})">
+    <header>
+        <div class="logo-container">
+            <img id="logo" src="{% static 'images/Logo.svg' %}" alt="Logo" height="50px">
+        </div>
+        <nav class="nav-content">
+            <div class="nav-links">
+                <a href="{% url 'counselor_dashboard' %}" class="nav-item" id="nav-item0">Dashboard</a>
+                <a href="{% url 'counselor_insights' %}" class="nav-item" id="nav-item1">Student Insights</a>
+                <a href="#" class="nav-item" id="nav-item2">Leave Applications</a>
+                <a href="{% url 'counselor_weekly_reports' %}" class="nav-item" id="nav-item3">Weekly Reports</a>
+            </div>
+        </nav>
+
+        <div class="right-container">
+            <div class="notifications" id="notifications">
+                <img alt="Notifications icon" height="25px" src="{% static 'images/icons/Notifications.svg' %}" />
+            </div>
+            <div class="burger-menu" id="burger-menu">
+                <img src="{% static 'images/icons/burger-menu.svg' %}" alt="burger-menu-icon">
+            </div>
+        </div>
+
+        <div class="dropdown-menu" id="notification-dropdown-menu">
+            <h2>Notifications</h2>
+            <a class="menu-item" href="#">Notification 1</a>
+            <a class="menu-item" href="#">Notification 2</a>
+            <a class="menu-item" href="#">Notification 3</a>
+            <div class="footer">
+                <span>View All</span>
+            </div>
+        </div>
+
+        <div class="burger-dropdown" id="burger-dropdown">
+            <h2>Menu</h2>
+            <a class="menu-item" href="{% url 'counselor_dashboard' %}">Dashboard</a>
+            <a class="menu-item" href="{% url 'counselor_insights' %}">Student Insights</a>
+            <a class="menu-item" href="{% url 'counselor_leave' %}">Leave Applications</a>
+            <a class="menu-item" href="{% url 'counselor_weekly_reports' %}">Weekly Reports</a>
+            <hr>
+            <a class="menu-item" href="#">Profile</a>
+            <a class="menu-item" href="#">Settings</a>
+            <div class="footer">
+                <a href="#" id="faqs"><span>FAQs</span></a>
+                <a href="{% url 'logout' %}" id="sign_out">Sign out</a>
+            </div>
+        </div>
+
+        <div class="profile-container" id="profile-container">
+            <div class="profile" id="profile">
+                <img alt="User profile picture" height="45px" src="{% static 'images/icons/profile.svg' %}" />
+                <img src="{% static 'images/icons/Arrow.svg' %}" alt="arrow" id="dropdown-icon">
+            </div>
+            <div class="dropdown-menu" id="dropdown-menu">
+                <h2>Hello {{ counselor.user.username }}</h2>
+                <a class="menu-item" href="#">Profile</a>
+                <a class="menu-item" href="#">Settings</a>
+                <div class="footer">
+                    <a href="#" id="faqs"><span>FAQs</span></a>
+                    <a href="{% url 'logout' %}" id="sign_out">Sign out</a>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <div class="content">
+        <main class="content-wrapper">
+            <!-- Display any messages -->
+            {% if messages %}
+            <div class="messages">
+                {% for message in messages %}
+                <div class="message {{ message.tags }}">
+                    {{ message }}
+                </div>
+                {% endfor %}
+            </div>
+            {% endif %}
+
+            <div class="sidebar">
+                <h2>Leave<br>Applications</h2>
+                <div class="button-container">
+                    <button class="new">New</button>
+                    <button class="records">Records</button>
+                </div>
+            </div>
+
+            <div class="top-controls">
+                <form method="GET" action="{% url 'filter_leaves' %}" id="searchForm">
+                    <div class="search-container">
+                        <input type="text" name="search" placeholder="search by name or roll no">
+                        <i class="fas fa-search search-icon"></i>
+                    </div>
+                    <div class="month-year-selector">
+                        <div class="label">Month</div>
+                        <div class="dropdown">
+                            <select id="monthSelect" name="month">
+                                <option value="Select">Select</option>
+                                <option value="01">January</option>
+                                <option value="02">February</option>
+                                <option value="03">March</option>
+                                <option value="04">April</option>
+                                <option value="05">May</option>
+                                <option value="06">June</option>
+                                <option value="07">July</option>
+                                <option value="08">August</option>
+                                <option value="09">September</option>
+                                <option value="10">October</option>
+                                <option value="11">November</option>
+                                <option value="12">December</option>
+                            </select>
+                            <i class="fas fa-caret-down"></i>
+                        </div>
+                        <div class="label">Year</div>
+                        <div class="dropdown">
+                            <select id="yearSelect" name="year">
+                                <option value="Select">Select</option>
+                                <!-- Years will be populated by JavaScript -->
+                            </select>
+                            <i class="fas fa-caret-down"></i>
+                        </div>
+                    </div>
+                </form>
+            </div>
+
+            <div class="container-1">
+                <div class="info">
+                    <h1>Pending Leave Applications</h1>
+                    <div class="tooltip">
+                        <img src="{% static 'images/icons/info.svg' %}" alt="info" height="20px">
+                        <span class="tooltiptext">Review and take action on pending leave requests.</span>
+                    </div>
+                </div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>S.No</th>
+                            <th>Date</th>
+                            <th>Roll No</th>
+                            <th>Student Name</th>
+                            <th>Absence reason</th>
+                            <th>Number of Days</th>
+                            <th>Status</th>
+                            <th>Operations</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for leave in today_leaves %}
+                        <tr>
+                            <td>{{ forloop.counter }}</td>
+                            <td>{{ leave.date|date:"d/m/Y" }}</td>
+                            <td>{{ leave.student.roll_number }}</td>
+                            <td>{{ leave.student.user.username }}</td>
+                            <td>{{ leave.reason }}</td>
+                            <td>{{ leave.no_of_days }} day{% if leave.no_of_days > 1 %}s{% endif %}</td>
+                            <td><span class="status {{ leave.status|lower }}">{{ leave.status }}</span></td>
+                            <td class="operations">
+                                <a href="{% url 'update_leave_status' %}?leave_id={{ leave.id }}&status=Approved" class="action-link approve-link"><img src="{% static 'images/icons/Approve.svg' %}"></a>
+                                <a href="{% url 'update_leave_status' %}?leave_id={{ leave.id }}&status=Rejected" class="action-link reject-link"><img src="{% static 'images/icons/Reject.svg' %}"></a>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="8" class="text-center">No pending leave applications.</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="container-2">
+                <h1>Processed Leave Applications</h1>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>S.No</th>
+                            <th>Date</th>
+                            <th>Roll No</th>
+                            <th>Student Name</th>
+                            <th>Absence reason</th>
+                            <th>Number of Days</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for leave in all_leaves %}
+                        <tr>
+                            <td>{{ forloop.counter }}</td>
+                            <td>{{ leave.date|date:"d/m/Y" }}</td>
+                            <td>{{ leave.student.roll_number }}</td>
+                            <td>{{ leave.student.user.username }}</td>
+                            <td>{{ leave.reason }}</td>
+                            <td>{{ leave.no_of_days }} day{% if leave.no_of_days > 1 %}s{% endif %}</td>
+                            <td><span class="status {{ leave.status|lower }}">{{ leave.status }}</span></td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="7" class="text-center">No processed leave applications found.</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </main>
+    </div>
+
+    <!-- Adding all the necessary JavaScript functions -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Get references to the buttons and containers for toggling between "New" and "Records"
+            const newButton = document.querySelector(".new");
+            const recordsButton = document.querySelector(".records");
+            const container1 = document.querySelector(".container-1");
+            const container2 = document.querySelector(".container-2");
+            const monthYearSelector = document.querySelector(".month-year-selector");
+            const searchInput = document.querySelector('.search-container input');
+
+            // Set the "New" button to the active state by default
+            newButton.classList.add("active");
+            container1.style.display = "block";
+            container2.style.display = "none";
+            monthYearSelector.style.display = "none";
+
+            // Toggle between container-1 (Pending) and container-2 (Processed Records)
+            newButton.addEventListener("click", function () {
+                if (container1.style.display !== "block") {
+                    container1.style.display = "block";
+                    container1.style.opacity = 0;
+                    fadeIn(container1);
+                    container2.style.display = "none";
+                    monthYearSelector.style.display = "none";
+                    newButton.classList.add("active");
+                    recordsButton.classList.remove("active");
+                }
+            });
+
+            recordsButton.addEventListener("click", function () {
+                if (container2.style.display !== "block") {
+                    container2.style.display = "block";
+                    container2.style.opacity = 0;
+                    fadeIn(container2);
+                    container1.style.display = "none";
+                    monthYearSelector.style.display = "flex";
+                    recordsButton.classList.add("active");
+                    newButton.classList.remove("active");
+                }
+            });
+
+            // Fade in utility function
+            function fadeIn(element) {
+                let opacity = 0;
+                const interval = setInterval(function () {
+                    if (opacity < 1) {
+                        opacity += 0.2;
+                        element.style.opacity = opacity;
+                    } else {
+                        clearInterval(interval);
+                    }
+                }, 50);
+            }
+
+            // Populate the year dropdown
+            const yearSelect = document.getElementById('yearSelect');
+            if (yearSelect) {
+                const currentYear = new Date().getFullYear();
+                const startYear = currentYear - 10;
+                for (let year = currentYear; year >= startYear; year--) {
+                    const option = document.createElement('option');
+                    option.value = year;
+                    option.textContent = year;
+                    yearSelect.appendChild(option);
+                }
+            }
+
+            // Make sure the dropdown selects take the proper values (useful when filtering)
+            const urlParams = new URLSearchParams(window.location.search);
+            if (urlParams.has('month')) {
+                const monthValue = urlParams.get('month');
+                const monthSelect = document.getElementById('monthSelect');
+                if (monthSelect) {
+                    monthSelect.value = monthValue;
+                }
+            }
+            if (urlParams.has('year')) {
+                const yearValue = urlParams.get('year');
+                const yearSelect = document.getElementById('yearSelect');
+                if (yearSelect) {
+                    yearSelect.value = yearValue;
+                }
+            }
+
+            // Add animation to status changes
+            const actionLinks = document.querySelectorAll('.action-link');
+            actionLinks.forEach(link => {
+                link.addEventListener('click', function(e) {
+                    // Find the parent row
+                    const row = this.closest('tr');
+
+                    // Add a highlight effect
+                    row.style.transition = 'background-color 0.5s';
+                    row.style.backgroundColor = '#ffffcc';
+                });
+            });
+
+            // Set status colors for all status elements
+            const statusElements = document.querySelectorAll(".status");
+            statusElements.forEach(function (element) {
+                const statusText = element.textContent.trim();
+                switch (statusText) {
+                    case "Pending":
+                        element.style.backgroundColor = "#007bff";
+                        break;
+                    case "Approved":
+                        element.style.backgroundColor = "#28a745";
+                        break;
+                    case "Rejected":
+                        element.style.backgroundColor = "#dc3545";
+                        break;
+                    default:
+                        element.style.backgroundColor = "#d1d5db";
+                        break;
+                }
+            });
+
+            // Auto-submit form when month/year selection changes
+            const monthSelect = document.getElementById('monthSelect');
+            const yearSelectForChange = document.getElementById('yearSelect');
+            if (monthSelect && yearSelectForChange) {
+                monthSelect.addEventListener('change', function() {
+                    document.getElementById('searchForm').submit();
+                });
+
+                yearSelectForChange.addEventListener('change', function() {
+                    document.getElementById('searchForm').submit();
+                });
+            }
+
+            // Auto-submit search form when typing stops
+            if (searchInput) {
+                let typingTimer;
+                const doneTypingInterval = 500; // ms
+
+                searchInput.addEventListener('keyup', function() {
+                    clearTimeout(typingTimer);
+                    if (searchInput.value) {
+                        typingTimer = setTimeout(function() {
+                            document.getElementById('searchForm').submit();
+                        }, doneTypingInterval);
+                    }
+                });
+            }
+        });
+    </script>
+</body>
+</html>

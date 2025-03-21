@@ -1,0 +1,89 @@
+<!--templates/student_remarks.html-->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Remarks</title>
+    {% load static %}
+    <link rel="icon" type="image/x-icon" href="{% static 'images/Logo.svg' %}">
+    <link rel="stylesheet" href="{% static 'css/header.css' %}">
+    <link rel="stylesheet" href="{% static 'css/student_remarks.css' %}">
+    <script src="{% static 'js/header.js' %}"></script>
+    <script src="{% static 'js/student_remarks.js' %}"></script>
+</head>
+<body style="background-image: url({% static 'images/Background2.svg' %})">
+    <header>
+        <div class="logo-container">
+            <img id="logo" src="{% static 'images/Logo.svg' %}" alt="Logo" height="50px">
+        </div>
+        <nav class="nav-content">
+            <div class="nav-links">
+                <a href="{% url 'student_dashboard' %}" class="nav-item">Dashboard</a>
+                <a href="{% url 'student_check_in' %}" class="nav-item">Check In</a>
+                <a href="{% url 'student_statistics' %}" class="nav-item">Statistics</a>
+                <a href="#" class="nav-item">Remarks</a>
+                <a href="{% url 'student_leave' %}" class="nav-item">Leave Application</a>
+                <a href="{% url 'student_weekly_reports' %}" class="nav-item">Weekly Report</a>
+            </div>
+        </nav>
+        <div class="profile-container" id="profile-container">
+            <div class="profile" id="profile">
+                <img alt="User profile picture" height="45px" src="{% static 'images/icons/profile.svg' %}" />
+                <img src="{% static 'images/icons/Arrow.svg' %}" alt="arrow" id="dropdown-icon">
+            </div>
+            <div class="dropdown-menu" id="dropdown-menu">
+                <h2>Hello <br> {{ student.user.username }}!</h2>
+                <a class="menu-item" href="{% url 'profile' %}">Profile</a>
+                <a class="menu-item" href="#">Settings</a>
+                <div class="footer">
+                    <a href="#" id="faqs"><span>FAQs</span></a>
+                    <a href="{% url 'logout' %}" id="sign_out">Sign out</a>
+                </div>
+            </div>
+        </div>
+    </header>
+    <div class="content">
+        <main class="content-wrapper">
+            <div class="title-wrapper">
+                <h1 class="page-title">Remarks</h1>
+            </div>
+            <div class="section-remarks">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>S.No</th>
+                            <th>Date</th>
+                            <th>Remarks</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for remark in remarks %}
+                        <tr>
+                            <td>{{ forloop.counter }}</td>
+                            <td>{{ remark.date }}</td>
+                            <td>{{ remark.remarks }}</td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="3">No remarks available.</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                <!-- Add this right after your table div -->
+                <div class="section-empty" style="display: none;">
+                  <p>No remarks available at this time.</p>
+                </div>
+            </div>
+        </main>
+    </div>
+<!--    &lt;!&ndash; Add this right below <div class="content"> &ndash;&gt;-->
+<!--    <div style="background-color: yellow; padding: 10px;">-->
+<!--        DEBUG: Found {{ remarks.count }} remarks.-->
+<!--        {% for r in remarks %}-->
+<!--            <p>{{ r.date }}: {{ r.remarks }}</p>-->
+<!--        {% endfor %}-->
+<!--    </div>-->
+</body>
+</html>

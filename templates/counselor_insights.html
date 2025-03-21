@@ -1,0 +1,147 @@
+<!--templates/counselor_insights.html-->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Insights</title>
+    {% load static %}
+    <link rel="icon" type="image/x-icon" href="{% static 'images/Logo.svg' %}">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@100..900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <link rel="stylesheet" href="{% static 'css/header.css' %}">
+    <link rel="stylesheet" href="{% static 'css/counselor_insights.css' %}">
+    <script src="{% static 'js/header.js' %}"></script>
+    <script src="{% static 'js/counselor_insights.js' %}"></script>
+</head>
+<body style="background-image: url({% static 'images/Background2.svg' %})">
+    <header>
+        <!-- Header content remains the same -->
+        <div class="logo-container">
+            <img id="logo" src="{% static 'images/Logo.svg' %}" alt="Logo" height="50px">
+        </div>
+        <nav class="nav-content">
+            <div class="nav-links">
+                <a href="{% url 'counselor_dashboard' %}" class="nav-item" id="nav-item0">Dashboard</a>
+                <!-- <a href="#" class="nav-item" id="nav-item1">Manage Students</a> -->
+                <a href="#" class="nav-item" id="nav-item1">Student Insights</a>
+                <a href="{% url 'counselor_leave' %}" class="nav-item" id="nav-item2">Leave Applications</a>
+                <a href="{% url 'counselor_weekly_reports' %}" class="nav-item" id="nav-item3">Weekly Reports</a>
+<!--                <a href="{% url 'counselor_insights' %}" class="nav-item" id="nav-item4">Student Remarks</a>-->
+            </div>
+        </nav>
+        <div class="right-container">
+            <div class="notifications" id="notifications">
+                <img alt="Notifications icon" height="25px" src="{% static 'images/icons/Notifications.svg' %}" />
+            </div>
+            <div class="burger-menu" id="burger-menu">
+                <img src="{% static 'images/icons/burger-menu.svg' %}" alt="burger-menu-icon">
+            </div>
+        </div>
+        <!-- (Other header dropdowns omitted for brevity) -->
+        <div class="profile-container" id="profile-container">
+            <div class="profile" id="profile">
+                <img alt="User profile picture" height="45px" src="{% static 'images/icons/profile.svg' %}" />
+                <img src="{% static 'images/icons/Arrow.svg' %}" alt="arrow" id="dropdown-icon">
+            </div>
+            <div class="dropdown-menu" id="dropdown-menu">
+                <h2>Hello {{ counselor.user.username }}</h2>
+                <a class="menu-item" href="#">Profile</a>
+                <a class="menu-item" href="counselor_settings.html">Settings</a>
+                <div class="footer">
+                    <a href="counselor_faqs.html" id="faqs"><span>FAQs</span></a>
+                    <a href="{% url 'logout' %}">Sign out</a>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <div class="content">
+        <main class="content-wrapper">
+            <div class="sidebar">
+                <h2>Student<br>Insights</h2>
+            </div>
+
+            <div class="top-controls">
+                <div class="search-container">
+                    <form method="get" action="{% url 'counselor_insights' %}">
+                        <input type="text" name="search" placeholder="search by name or roll no" value="{{ search_query }}">
+<!--                        <button type="submit"><i class="fas fa-search search-icon"></i></button>-->
+                    </form>
+                </div>
+            </div>
+
+            <!-- Container 1: List of assigned students -->
+            <div class="container-1">
+                <div class="info">
+                    <h1>Assigned Students</h1>
+                </div>
+
+                <table>
+                    <thead>
+                        <tr>
+                            <th>S.No</th>
+                            <th>Roll No</th>
+                            <th>Student Name</th>
+                            <th>Attendance(%)</th>
+                            <th>Remarks</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for student in students %}
+                        <tr>
+                            <td>{{ forloop.counter }}</td>
+                            <td>{{ student.roll_number }}</td>
+                            <td>{{ student.user.username }}</td>
+                            <td>{{ student.latest_attendance }}</td>
+                            <td>
+                                <button class="btn-add-remark
+                                    {% if student.latest_attendance < 75 %}low-attendance
+                                    {% elif student.latest_attendance > 75 %}good-attendance
+                                    {% else %}warning-attendance{% endif %}"
+                                    data-roll="{{ student.roll_number }}"
+                                    data-name="{{ student.user.username }}"
+                                    data-attendance="{{ student.latest_attendance }}">
+                                    Add Remark
+                                </button>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="5">No students assigned to you yet.</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Container 2: Inline Remark Form (hidden by default) -->
+            <div class="container-2" style="display:none;">
+                <div class="info-stud">
+                    <form method="post" action="{% url 'counselor_insights' %}">
+                        {% csrf_token %}
+                        <input type="hidden" id="student_id" name="student_id" value="">
+                        <div class="form-group">
+                            <h4 id="name-display"><b>Name:</b> <span></span></h4>
+                            <h4 id="rollno-display"><b>Roll no:</b> <span></span></h4>
+                            <h4 id="attendance-display"><b>Attendance(%):</b> <span></span></h4>
+                        </div>
+                        <div class="form-group">
+                            <label for="remarks"><b>Remarks:</b></label>
+                            <textarea id="remarks" name="remarks" placeholder="Enter remark here..." required></textarea>
+                        </div>
+                        <div class="form-actions">
+                            <button type="submit" class="submit-btn">Submit</button>
+                            <button type="reset" class="reset-btn">Reset</button>
+                            <button type="button" class="close-btn">Close</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+        </main>
+    </div>
+</body>
+</html>
